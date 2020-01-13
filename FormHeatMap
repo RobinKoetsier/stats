@@ -1,0 +1,65 @@
+
+library(ggplot2) # ggplot() for plotting
+library(dplyr) # data reformatting
+library(tidyr) # data reformatting
+
+library(zoo)
+ere1920_total <- ere1920_total %>% mutate(Form = rollsumr(ere1920_total$PointsPerGame, k = 5, fill = NA))
+
+ere1920_total <- ere1920_total %>% mutate(Pos2 = Pos$Position)
+
+KKD1920_total <- KKD1920_total %>% mutate(Form = rollsumr(KKD1920_total$PointsPerGame, k = 5, fill = NA))
+
+ee <- ere1920_total
+ee <- KKD1920_total
+ee <- ee %>% mutate (Team2 = Team)
+
+ee <- ee[!ee$Round == "4", ]
+col.plot<-c('lightblue','darkblue')
+textcol <- "grey40"
+ee <- ee %>% arrange(Position)
+
+png( filename = "Form5.png",
+     units="in", 
+     width=8, 
+     height=(6), 
+     pointsize=12, 
+     res=300)
+
+
+ 
+
+ggplot(ee,aes(x=Round,y=reorder(Team, desc(Position))))+
+   geom_tile(aes(fill = Form))+scale_fill_gradient2(low="red",mid = "yellow3", high="darkgreen", midpoint = 7.5) +
+
+  theme(legend.position="right",legend.direction="vertical",
+        legend.title=element_text(colour=textcol),
+        legend.margin=margin(grid::unit(0,"cm")),
+        legend.text=element_text(colour=textcol,size=7,face="bold"),
+        legend.key.height=grid::unit(0.8,"cm"),
+        legend.key.width=grid::unit(0.2,"cm"),
+        axis.text.x=element_text(size=10,colour=textcol),
+        axis.text.y=element_text(vjust=0.2,colour=textcol),
+        axis.ticks=element_line(size=0.4),
+       # plot.margin = margin(2, 2, 2, 2, "cm"),
+        plot.background=element_blank(),
+        panel.border=element_blank(),
+       
+        plot.title=element_text(colour=textcol,hjust=0,size=14,face="bold")) +
+  theme_bw() +
+   
+  scale_x_discrete(name ="", 
+                   limits=c(5:18)) +
+  coord_cartesian(xlim = c(5, 18))+
+  ylab("") +
+  labs(fill = "Points", title = "Form Eredivisie last 5 games", caption = "Made bij @RobinWilhelmus in Rstudio", size = "1")  +
+theme(
+  plot.caption = element_text(size = "6")
+)
+  
+  
+
+dev.off()
+
+
+                                                
